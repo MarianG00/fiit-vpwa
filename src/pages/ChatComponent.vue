@@ -48,7 +48,7 @@ export default {
     sendMessage() {
       if (this.newMessage) {
         this.newMessage = '';
-        // Example notification
+        // Example notification, set forceBoth to true to show both browser & toasty notification
         this.sendNotif(`New Message in ${this.currentChannel}`, {}, true);
       }
     },
