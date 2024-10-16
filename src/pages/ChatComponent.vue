@@ -47,7 +47,12 @@ export default {
   methods: {
     sendMessage() {
       if (this.newMessage) {
-        this.newMessage = '';
+        this.messages.push({
+          id: Date.now(),
+          user: 'Me', // todo set the user
+          text: [this.newMessage]
+        })
+        this.newMessage = ''
         // Example notification, set forceBoth to true to show both browser & toasty notification
         this.sendNotif(`New Message in ${this.currentChannel}`, {}, true);
       }
