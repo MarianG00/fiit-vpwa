@@ -58,7 +58,7 @@ export default {
     const name = ref(null);
     const age = ref(null);
     const router = useRouter();
-    const form = ref(null); // Reference to the form
+    const form = ref(null);
 
     return {
       name,
@@ -66,9 +66,13 @@ export default {
       form,
 
       onSubmit() {
-        // Check if the register button was pressed
         if (form.value && form.value.validate()) {
-          // If the validation is successful, proceed to log in
+          const notifAccess = () => {
+            if (Notification.permission !== 'granted') {
+              Notification.requestPermission();
+            }
+          };
+          notifAccess();
           router.push('/');
         }
       },
@@ -79,8 +83,6 @@ export default {
       },
 
       onRegister() {
-        // Skip validation for registration
-        // You can handle registration logic here if needed
         router.push('/register');
       },
     };
