@@ -24,7 +24,15 @@
 </template>
 
 <script>
+import { useQuasar } from 'quasar';
+
 export default {
+  setup() {
+    const $q = useQuasar();
+    return {
+      $q,
+    };
+  },
   data() {
     return {
       newMessage: '',
@@ -41,15 +49,24 @@ export default {
       if (this.newMessage) {
         this.newMessage = '';
         // Example notification
-        this.sendNotif(`New Message in ${this.currentChannel}`, {});
+        this.sendNotif(`New Message in ${this.currentChannel}`, {}, true);
       }
     },
     fetchMessages() {
       this.currentChannel = this.$route.params.id || 'general';
     },
-    sendNotif(title, options) {
+    sendNotif(title, options, forceBoth) {
       if (Notification.permission === 'granted') {
-        new Notification(title, options);
+        if (this.$q.appVisible || forceBoth) {
+          this.$q.notify({
+            type: 'info',
+            message: title,
+            timeout: 2500,
+          });
+        }
+        if (!this.$q.appVisible || forceBoth) {
+          new Notification(title, options);
+        }
       }
     },
   },
