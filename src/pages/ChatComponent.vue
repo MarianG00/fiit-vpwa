@@ -47,12 +47,22 @@ export default {
   methods: {
     sendMessage() {
       if (this.newMessage) {
-        this.newMessage = '';
+        this.messages.push({
+          id: Date.now(),
+          user: 'Me', // todo set the user
+          text: [this.newMessage]
+        })
+        this.newMessage = ''
         // Example notification, set forceBoth to true to show both browser & toasty notification
         this.sendNotif(`New Message in ${this.currentChannel}`, {}, true);
       }
     },
+    // todo fetch messages
     fetchMessages() {
+      this.messages =  [
+        { id: 1, user: 'User 1', text: ['Hello!'] },
+        { id: 2, user: 'User 2', text: ['Hi, how are you?'] }
+      ]
       this.currentChannel = this.$route.params.id || 'general';
     },
     sendNotif(title, options, forceBoth) {

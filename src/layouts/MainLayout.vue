@@ -15,12 +15,14 @@
           </q-item-section>
         </q-item>
 
+<!--todo highlighted channels-->
         <q-item
           clickable
           v-ripple
-          v-for="channel in channels"
+          v-for="channel in sortedChannels"
           :key="channel.id"
           :to="`/channel/${channel.id}`"
+          :class="{ 'highlight': channel.id === 'random', 'invite': channel.invite }"
         >
           <q-item-section avatar>
             <q-icon name="chat" />
@@ -64,12 +66,20 @@ export default {
   data() {
     return {
       drawer: true,
+      // todo fetch channels
       channels: [
-        { id: 'general', name: 'General' },
-        { id: 'random', name: 'Random' },
-        { id: 'development', name: 'Development' },
-      ],
+        {id: 'general', name: 'General'},
+        {id: 'random', name: 'Random'},
+        {id: 'johns-channel', name: 'John\'s Channel', invite: true},
+        {id: 'development', name: 'Development'},
+      ]
     };
+  },
+  computed: {
+    sortedChannels() {
+      // todo sort also by other criteria
+      return this.channels.toSorted((a, b) => (b.invite || 0) - (a.invite || 0));
+    }
   },
   methods: {
     createChannel() {
@@ -84,3 +94,12 @@ export default {
   },
 };
 </script>
+
+<style scoped>
+.highlight {
+  background-color: #e0f7fa;
+}
+.invite {
+  background-color: #f3e5f5;
+}
+</style>
