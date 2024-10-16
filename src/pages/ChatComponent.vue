@@ -57,7 +57,12 @@ export default {
         this.sendNotif(`New Message in ${this.currentChannel}`, {}, true);
       }
     },
+    // todo fetch messages
     fetchMessages() {
+      this.messages =  [
+        { id: 1, user: 'User 1', text: ['Hello!'] },
+        { id: 2, user: 'User 2', text: ['Hi, how are you?'] }
+      ]
       this.currentChannel = this.$route.params.id || 'general';
     },
     sendNotif(title, options, forceBoth) {
