@@ -10,7 +10,11 @@
         />
       </div>
 
-      <q-input v-model="newMessage" placeholder="Type your message" @keyup.enter="sendMessage">
+      <q-input
+        v-model="newMessage"
+        placeholder="Type your message"
+        @keyup.enter="sendMessage"
+      >
         <template v-slot:append>
           <q-btn icon="send" @click="sendMessage" />
         </template>
@@ -21,31 +25,38 @@
 
 <script>
 export default {
-  data () {
+  data() {
     return {
       newMessage: '',
       messages: [],
-      currentChannel: ''
-    }
+      currentChannel: 'General',
+    };
   },
   watch: {
     // Re-fetch messages when the channel ID changes
-    '$route.params.id': 'fetchMessages'
+    '$route.params.id': 'fetchMessages',
   },
   methods: {
-    sendMessage () {
+    sendMessage() {
       if (this.newMessage) {
-        this.newMessage = ''
+        this.newMessage = '';
+        // Example notification
+        this.sendNotif(`New Message in ${this.currentChannel}`, {});
       }
     },
-    fetchMessages () {
-      this.currentChannel = this.$route.params.id || 'general'
-    }
+    fetchMessages() {
+      this.currentChannel = this.$route.params.id || 'general';
+    },
+    sendNotif(title, options) {
+      if (Notification.permission === 'granted') {
+        new Notification(title, options);
+      }
+    },
   },
-  mounted () {
-    this.fetchMessages()  // Fetch initial messages on page load
-  }
-}
+  mounted() {
+    this.fetchMessages(); // Fetch initial messages on page load
+  },
+};
 </script>
 
 <style scoped>
