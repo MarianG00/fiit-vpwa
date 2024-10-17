@@ -3,7 +3,98 @@
     <q-header>
       <q-toolbar>
         <q-toolbar-title> Slack Clone </q-toolbar-title>
-        <q-btn flat color="white" label="Log Out" @click="onLogOut" />
+
+        <q-btn
+          flat
+          color="white"
+          :label="
+            userStore.current_user.name + ' ' + userStore.current_user.lastName
+          "
+          :icon="
+            userStore.current_user.status == 'Online'
+              ? 'circle'
+              : userStore.current_user.status == 'Offline'
+              ? 'mode_night'
+              : 'do_not_disturb_on'
+          "
+        >
+          <q-menu
+            transition-show="rotate"
+            transition-hide="rotate"
+            style="min-width: auto; max-width: none"
+          >
+            <q-list style="min-width: auto; max-width: none">
+              <q-separator />
+              <q-item
+                clickable
+                style="padding: 16px; display: flex; align-items: center"
+              >
+                <q-item-section side>
+                  <q-icon
+                    :name="
+                      userStore.current_user.status == 'Online'
+                        ? 'circle'
+                        : userStore.current_user.status == 'Offline'
+                        ? 'mode_night'
+                        : 'do_not_disturb_on'
+                    "
+                  />
+                </q-item-section>
+
+                <q-item-section
+                  style="min-width: 100px; max-width: none; flex-grow: 1"
+                  >{{ userStore.current_user.status }}</q-item-section
+                >
+                <q-item-section side>
+                  <q-icon name="keyboard_arrow_right" />
+                </q-item-section>
+
+                <q-menu
+                  anchor="top end"
+                  self="top start"
+                  style="min-width: auto; max-width: none"
+                >
+                  <q-list>
+                    <q-item>
+                      <q-item-section>
+                        <q-radio
+                          v-model="userStore.current_user.status"
+                          val="Online"
+                          label="Online"
+                        />
+                      </q-item-section>
+                    </q-item>
+
+                    <q-item>
+                      <q-item-section>
+                        <q-radio
+                          v-model="userStore.current_user.status"
+                          val="Offline"
+                          label="Offline"
+                        />
+                      </q-item-section>
+                    </q-item>
+
+                    <q-item style="min-width: 100px">
+                      <q-item-section style="min-width: 100px; max-width: none">
+                        <q-radio
+                          v-model="userStore.current_user.status"
+                          val="Do Not Disturb"
+                          label="Do Not Disturb"
+                          style="min-width: auto"
+                        />
+                      </q-item-section>
+                    </q-item>
+                  </q-list>
+                </q-menu>
+              </q-item>
+              <q-separator />
+              <q-item clickable v-close-popup style="padding: 16px">
+                <q-item-section @click="onLogOut">Log Out</q-item-section>
+              </q-item>
+            </q-list>
+          </q-menu>
+        </q-btn>
       </q-toolbar>
     </q-header>
 
@@ -42,12 +133,15 @@
 
 <script>
 import { useRouter } from 'vue-router';
+//import { ref } from 'vue';
 import { useQuasar } from 'quasar';
+import { userStore } from '../stores/userStore';
 
 export default {
   setup() {
     const router = useRouter();
     const $q = useQuasar();
+
     const onLogOut = () => {
       $q.notify({
         type: 'info',
@@ -60,6 +154,7 @@ export default {
 
     return {
       onLogOut,
+      userStore,
     };
   },
 

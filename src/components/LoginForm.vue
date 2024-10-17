@@ -11,7 +11,7 @@
 
       <q-input
         filled
-        v-model="name"
+        v-model="email"
         label="Email"
         lazy-rules
         :rules="[
@@ -23,7 +23,7 @@
       <q-input
         filled
         type="password"
-        v-model="age"
+        v-model="password"
         label="Password"
         lazy-rules
         :rules="[
@@ -52,18 +52,22 @@
 <script>
 import { ref } from 'vue';
 import { useRouter } from 'vue-router';
+import { useQuasar } from 'quasar';
+import { userStore } from '../stores/userStore';
 
 export default {
   setup() {
-    const name = ref(null);
-    const age = ref(null);
+    const email = ref(null);
+    const password = ref(null);
     const router = useRouter();
     const form = ref(null);
+    const $q = useQuasar();
 
     return {
-      name,
-      age,
+      email,
+      password,
       form,
+      userStore,
 
       onSubmit() {
         if (form.value && form.value.validate()) {
@@ -73,13 +77,24 @@ export default {
             }
           };
           notifAccess();
+          if (userStore.login(email.value, password.value)) {
+            $q.notify({
+              type: 'positive',
+              message: `Logged in as ${
+                userStore.current_user.name +
+                ' ' +
+                userStore.current_user.lastName
+              }`,
+              timeout: 2500,
+            });
+          }
           router.push('/');
         }
       },
 
       onReset() {
-        name.value = null;
-        age.value = null;
+        email.value = null;
+        password.value = null;
       },
 
       onRegister() {
