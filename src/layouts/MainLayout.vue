@@ -2,7 +2,14 @@
   <q-layout view="lHh Lpr lFf">
     <q-header>
       <q-toolbar>
-        <q-toolbar-title> Slack Clone </q-toolbar-title>
+        <div style="flex-grow: 1">
+          <img
+            src="../assets/slackerboylogo.jpg"
+            style="width: 100px; height: auto"
+          />
+        </div>
+
+        <!--<q-toolbar-title> SlackerBoy </q-toolbar-title>-->
 
         <q-btn
           flat
@@ -106,14 +113,17 @@
           </q-item-section>
         </q-item>
 
-<!--todo highlighted channels-->
+        <!--todo highlighted channels-->
         <q-item
           clickable
           v-ripple
           v-for="channel in sortedChannels"
           :key="channel.id"
           :to="`/channel/${channel.id}`"
-          :class="{ 'highlight': channel.id === 'random', 'invite': channel.invite }"
+          :class="{
+            highlight: channel.id === 'random',
+            invite: channel.invite,
+          }"
         >
           <q-item-section avatar>
             <q-icon name="chat" />
@@ -141,7 +151,9 @@ export default {
   setup() {
     const router = useRouter();
     const $q = useQuasar();
-
+    if (!userStore.current_user.isAuthenticated) {
+      router.push('/login');
+    }
     const onLogOut = () => {
       $q.notify({
         type: 'info',
@@ -163,18 +175,20 @@ export default {
       drawer: true,
       // todo fetch channels
       channels: [
-        {id: 'general', name: 'General'},
-        {id: 'random', name: 'Random'},
-        {id: 'johns-channel', name: 'John\'s Channel', invite: true},
-        {id: 'development', name: 'Development'},
-      ]
+        { id: 'general', name: 'General' },
+        { id: 'random', name: 'Random' },
+        { id: 'johns-channel', name: "John's Channel", invite: true },
+        { id: 'development', name: 'Development' },
+      ],
     };
   },
   computed: {
     sortedChannels() {
       // todo sort also by other criteria
-      return this.channels.toSorted((a, b) => (b.invite || 0) - (a.invite || 0));
-    }
+      return this.channels.toSorted(
+        (a, b) => (b.invite || 0) - (a.invite || 0)
+      );
+    },
   },
   methods: {
     createChannel() {
