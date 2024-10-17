@@ -25,12 +25,16 @@
 
 <script>
 import { useQuasar } from 'quasar';
+import { userStore } from '../stores/userStore';
 
 export default {
   setup() {
     const $q = useQuasar();
+    const current_user = userStore;
+
     return {
       $q,
+      current_user,
     };
   },
   data() {
