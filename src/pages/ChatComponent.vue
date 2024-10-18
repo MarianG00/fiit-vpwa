@@ -16,6 +16,7 @@
           :key="msg.id"
           :text="msg.text"
           :name="msg.user"
+          :sent="msg.user === 'Me'"
         />
       </q-infinite-scroll>
     </div>
