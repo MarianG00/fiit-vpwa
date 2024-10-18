@@ -20,6 +20,12 @@
         />
       </q-infinite-scroll>
     </div>
+    <UserTyping
+      :user="userStore"
+      :message="newMessage"
+      v-if="newMessage.length > 0"
+    />
+
     <q-input
       v-model="newMessage"
       placeholder="Type your message"
@@ -35,16 +41,19 @@
 <script>
 import { useQuasar } from 'quasar';
 import { userStore } from 'stores/userStore';
+import UserTyping from 'src/components/UserTyping.vue';
 
 export default {
   setup() {
     const $q = useQuasar();
-    const current_user = userStore;
 
     return {
       $q,
-      current_user,
+      userStore,
     };
+  },
+  components: {
+    UserTyping,
   },
   data() {
     return {
@@ -59,16 +68,18 @@ export default {
   },
   methods: {
     sendMessage() {
-      if (!this.newMessage) return;
-
-      this.messages.push({
-        id: Date.now(),
-        user: 'Me',
-        text: [this.newMessage]
-      })
-      this.newMessage = ''
-      this.sendNotif(`New Message in ${this.currentChannel}`, {}, true);
+      if (this.newMessage) {
+        this.messages.push({
+          id: Date.now(),
+          user: 'Me', // todo set the user
+          text: [this.newMessage],
+        });
+        this.newMessage = '';
+        // Example notification, set forceBoth to true to show both browser & toasty notification
+        this.sendNotif(`New Message in ${this.currentChannel}`, {}, true);
+      }
     },
+    // todo fetch messages
     sendNotif(title, options, forceBoth) {
       if (Notification.permission === 'granted') {
         if (this.$q.appVisible || forceBoth) {
@@ -118,8 +129,5 @@ export default {
       this.currentChannel = this.$route.params.id || 'general';
     }
   },
-  mounted() {
-    console.log('mounted')
-  }
 };
 </script>

@@ -13,9 +13,7 @@
         <q-btn
           flat
           color="white"
-          :label="
-            userStore.current_user.name + ' ' + userStore.current_user.lastName
-          "
+          :label="userStore.current_user.nick"
           :icon="
             userStore.current_user.status == 'Online'
               ? 'circle'
