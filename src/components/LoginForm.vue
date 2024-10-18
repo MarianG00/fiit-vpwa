@@ -12,12 +12,9 @@
       <q-input
         filled
         v-model="email"
-        label="Email"
+        label="Email or nickname"
         lazy-rules
-        :rules="[
-          (val) => !!val || 'Email is required',
-          (val) => /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(val) || 'Invalid email',
-        ]"
+        :rules="[(val) => !!val || 'Email or nickname is required']"
       />
 
       <q-input
@@ -80,11 +77,7 @@ export default {
           if (userStore.login(email.value, password.value)) {
             $q.notify({
               type: 'positive',
-              message: `Logged in as ${
-                userStore.current_user.name +
-                ' ' +
-                userStore.current_user.lastName
-              }`,
+              message: `Logged in as ${userStore.current_user.nick}`,
               timeout: 2500,
             });
           }

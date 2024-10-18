@@ -8,6 +8,11 @@
           :text="msg.text"
           :name="msg.user"
         />
+        <UserTyping
+          :user="userStore"
+          :message="newMessage"
+          v-if="newMessage.length > 0"
+        ></UserTyping>
       </div>
 
       <q-input
@@ -26,16 +31,19 @@
 <script>
 import { useQuasar } from 'quasar';
 import { userStore } from '../stores/userStore';
+import UserTyping from 'src/components/UserTyping.vue';
 
 export default {
   setup() {
     const $q = useQuasar();
-    const current_user = userStore;
 
     return {
       $q,
-      current_user,
+      userStore,
     };
+  },
+  components: {
+    UserTyping,
   },
   data() {
     return {
@@ -54,19 +62,19 @@ export default {
         this.messages.push({
           id: Date.now(),
           user: 'Me', // todo set the user
-          text: [this.newMessage]
-        })
-        this.newMessage = ''
+          text: [this.newMessage],
+        });
+        this.newMessage = '';
         // Example notification, set forceBoth to true to show both browser & toasty notification
         this.sendNotif(`New Message in ${this.currentChannel}`, {}, true);
       }
     },
     // todo fetch messages
     fetchMessages() {
-      this.messages =  [
+      this.messages = [
         { id: 1, user: 'User 1', text: ['Hello!'] },
-        { id: 2, user: 'User 2', text: ['Hi, how are you?'] }
-      ]
+        { id: 2, user: 'User 2', text: ['Hi, how are you?'] },
+      ];
       this.currentChannel = this.$route.params.id || 'general';
     },
     sendNotif(title, options, forceBoth) {

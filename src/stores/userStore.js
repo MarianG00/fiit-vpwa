@@ -4,6 +4,7 @@ export const userStore = reactive({
   current_user: {
     name: 'John',
     lastName: 'Doe',
+    nick: 'Johnny',
     email: '',
     isAuthenticated: false,
     status: '',
@@ -18,7 +19,13 @@ export const userStore = reactive({
   },
 
   login(email, password) {
-    this.current_user.email = email;
+    if (email.includes('@')) {
+      this.current_user.email = email;
+      this.current_user.nick = 'Johnny';
+    } else {
+      this.current_user.nick = email;
+      this.current_user.email = 'john.doe@example.com';
+    }
     this.current_user.isAuthenticated = true;
     password;
     this.current_user.status = 'Offline';
@@ -30,6 +37,7 @@ export const userStore = reactive({
     this.current_user.lastName = '';
     this.current_user.status = '';
     this.current_user.email = '';
+    this.current_user.nick = '';
     this.current_user.isAuthenticated = false;
   },
 });

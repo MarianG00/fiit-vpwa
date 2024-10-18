@@ -41,6 +41,14 @@
         <q-input
           filled
           type="text"
+          v-model="nickName"
+          label="Nickname"
+          lazy-rules
+          :rules="[(val) => !!val || 'Nickname is required']"
+        />
+        <q-input
+          filled
+          type="text"
           v-model="email"
           label="Email"
           lazy-rules
@@ -100,6 +108,7 @@ export default {
     const lastName = ref(null);
     const router = useRouter();
     const form = ref(null);
+    const nickname = ref(null);
 
     const onReset = () => {
       email.value = null;
@@ -107,6 +116,7 @@ export default {
       firstName.value = null;
       lastName.value = null;
       passwordRepeat.value = null;
+      nickname.value = null;
     };
 
     const onRegister = () => {
@@ -133,6 +143,7 @@ export default {
       firstName,
       lastName,
       form,
+      nickName,
       onRegister,
       onReset,
       onBack,
