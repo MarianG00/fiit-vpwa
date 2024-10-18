@@ -1,36 +1,46 @@
 <template>
   <q-page padding>
-    <div class="chat-window">
-      <div class="messages">
+    <div class="q-pa-md">
+      <div class="text-center" v-if="endOfChat">
+        End of chat
+      </div>
+      <q-infinite-scroll @load="onLoad" reverse>
+        <template v-slot:loading>
+          <div class="row justify-center q-my-md">
+            <q-spinner color="primary" name="dots" size="40px" />
+          </div>
+        </template>
+
         <q-chat-message
           v-for="msg in messages"
           :key="msg.id"
           :text="msg.text"
           :name="msg.user"
+          :sent="msg.user === 'Me'"
         />
-        <UserTyping
-          :user="userStore"
-          :message="newMessage"
-          v-if="newMessage.length > 0"
-        ></UserTyping>
-      </div>
-
-      <q-input
-        v-model="newMessage"
-        placeholder="Type your message"
-        @keyup.enter="sendMessage"
-      >
-        <template v-slot:append>
-          <q-btn icon="send" @click="sendMessage" />
-        </template>
-      </q-input>
+      </q-infinite-scroll>
     </div>
+    <UserTyping
+      :user="userStore"
+      :message="newMessage"
+      v-if="newMessage.length > 0"
+    />
+
+    <q-input
+      v-model="newMessage"
+      placeholder="Type your message"
+      @keyup.enter="sendMessage"
+    >
+      <template v-slot:append>
+        <q-btn icon="send" @click="sendMessage" />
+      </template>
+    </q-input>
   </q-page>
 </template>
 
 <script>
 import { useQuasar } from 'quasar';
-import { userStore } from '../stores/userStore';
+import { userStore } from 'stores/userStore';
 import UserTyping from 'src/components/UserTyping.vue';
 
 export default {
@@ -50,11 +60,11 @@ export default {
       newMessage: '',
       messages: [],
       currentChannel: 'General',
+      endOfChat: false,
     };
   },
   watch: {
-    // Re-fetch messages when the channel ID changes
-    '$route.params.id': 'fetchMessages',
+    '$route.params.id': 'onChannelChanged',
   },
   methods: {
     sendMessage() {
@@ -70,13 +80,6 @@ export default {
       }
     },
     // todo fetch messages
-    fetchMessages() {
-      this.messages = [
-        { id: 1, user: 'User 1', text: ['Hello!'] },
-        { id: 2, user: 'User 2', text: ['Hi, how are you?'] },
-      ];
-      this.currentChannel = this.$route.params.id || 'general';
-    },
     sendNotif(title, options, forceBoth) {
       if (Notification.permission === 'granted') {
         if (this.$q.appVisible || forceBoth) {
@@ -91,22 +94,40 @@ export default {
         }
       }
     },
-  },
-  mounted() {
-    this.fetchMessages(); // Fetch initial messages on page load
+    onLoad (index, done) {
+      if (index > 5) {
+        this.endOfChat = true;
+        return done()
+      }
+      setTimeout(() => {
+        const newData = [
+          { id: 1, user: 'Me', text: ['Hello!'] },
+          { id: 2, user: 'User 2', text: ['Hi, how are you?'] },
+          { id: 3, user: 'Me', text: ['I am fine, thank you!'] },
+          { id: 4, user: 'User 2', text: ['Great!'] },
+          { id: 5, user: 'Me', text: ['How can I help you?'] },
+          { id: 6, user: 'User 2', text: ['I need help with my homework.'] },
+          { id: 7, user: 'Me', text: ['Sure, I can help you with that.'] },
+          { id: 8, user: 'User 2', text: ['Thank you!'] },
+          { id: 9, user: 'Me', text: ['You are welcome!'] },
+          { id: 10, user: 'User 2', text: ['Goodbye!'] },
+          { id: 11, user: 'Me', text: ['Goodbye!'] },
+          { id: 12, user: 'User 2', text: ['What is the best programming language?'] },
+          { id: 13, user: 'Me', text: ['It depends on what you want to do.'] },
+          { id: 14, user: 'User 2', text: ['I want to build a website.'] },
+          { id: 15, user: 'Me', text: ['You can use JavaScript.'] },
+          { id: 16, user: 'User 2', text: ['Thanks but no thanks'] },
+          { id: 17, user: 'Me', text: ['You are welcome!'] },
+        ];
+        this.messages = newData.concat(this.messages);
+        done()
+      }, 1000)
+    },
+    onChannelChanged() {
+      this.messages = [];
+      this.endOfChat = false;
+      this.currentChannel = this.$route.params.id || 'general';
+    }
   },
 };
 </script>
-
-<style scoped>
-.chat-window {
-  display: flex;
-  flex-direction: column;
-  height: 100%;
-}
-
-.messages {
-  flex-grow: 1;
-  overflow-y: auto;
-}
-</style>

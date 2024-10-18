@@ -2,14 +2,13 @@
   <q-layout view="lHh Lpr lFf">
     <q-header>
       <q-toolbar>
+        <q-btn flat @click="drawer = !drawer" round dense icon="menu" v-if="$q.screen.lt.md" />
         <div style="flex-grow: 1">
           <img
             src="../assets/slackerboylogo.jpg"
             style="width: 100px; height: auto"
-          />
+            alt="logo"/>
         </div>
-
-        <!--<q-toolbar-title> SlackerBoy </q-toolbar-title>-->
 
         <q-btn
           flat
@@ -103,7 +102,7 @@
       </q-toolbar>
     </q-header>
 
-    <q-drawer v-model="drawer" side="left" bordered>
+    <q-drawer v-model="drawer" side="left" bordered :behavior="drawerBehavior">
       <q-list>
         <q-item clickable v-ripple to="/" exact>
           <q-item-section>
@@ -186,6 +185,9 @@ export default {
       return this.channels.toSorted(
         (a, b) => (b.invite || 0) - (a.invite || 0)
       );
+    },
+    drawerBehavior() {
+      return this.$q.screen.lt.md ? 'mobile' : 'default';
     },
   },
   methods: {
