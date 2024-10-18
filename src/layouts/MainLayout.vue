@@ -6,10 +6,8 @@
           <img
             src="../assets/slackerboylogo.jpg"
             style="width: 100px; height: auto"
-          />
+            alt="logo"/>
         </div>
-
-        <!--<q-toolbar-title> SlackerBoy </q-toolbar-title>-->
 
         <q-btn
           flat
