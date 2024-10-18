@@ -108,7 +108,7 @@ export default {
     const lastName = ref(null);
     const router = useRouter();
     const form = ref(null);
-    const nickname = ref(null);
+    const nickName = ref(null);
 
     const onReset = () => {
       email.value = null;
@@ -116,7 +116,7 @@ export default {
       firstName.value = null;
       lastName.value = null;
       passwordRepeat.value = null;
-      nickname.value = null;
+      nickName.value = null;
     };
 
     const onRegister = () => {
