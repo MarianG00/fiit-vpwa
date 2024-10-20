@@ -29,9 +29,9 @@
     >
       <q-list style="flex-grow: 1">
         <q-item clickable v-ripple to="/" exact>
-          <q-item-section>
-            <q-btn icon="add" label="New Channel" flat @click="createChannel" />
-          </q-item-section>
+          <h5>
+            Channels
+          </h5>
         </q-item>
 
         <!--todo highlighted channels-->
@@ -258,9 +258,11 @@
 
 <script>
 import { useRouter } from 'vue-router';
-//import { ref } from 'vue';
 import { useQuasar } from 'quasar';
-import { userStore } from '../stores/userStore';
+import { userStore } from 'stores/userStore';
+import { channelsStore } from 'stores/channelsStore';
+
+
 export default {
   setup() {
     const router = useRouter();
@@ -287,19 +289,12 @@ export default {
   data() {
     return {
       drawer: true,
-      // todo fetch channels
-      channels: [
-        { id: 'general', name: 'General' },
-        { id: 'random', name: 'Random' },
-        { id: 'johns-channel', name: "John's Channel", invite: true },
-        { id: 'development', name: 'Development' },
-      ],
     };
   },
   computed: {
     sortedChannels() {
       // todo sort also by other criteria
-      return this.channels.toSorted(
+      return channelsStore.channels.toSorted(
         (a, b) => (b.invite || 0) - (a.invite || 0)
       );
     },

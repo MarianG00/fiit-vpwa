@@ -40,6 +40,7 @@
 
 <script>
 import { useQuasar } from 'quasar';
+import { channelsStore } from 'stores/channelsStore';
 import { userStore } from 'stores/userStore';
 import UserTyping from 'src/components/UserTyping.vue';
 
@@ -59,12 +60,10 @@ export default {
     return {
       newMessage: '',
       messages: [],
-      currentChannel: 'General',
+      currentChannel: this.$route.params.id,
       endOfChat: false,
+      members: ['You', 'Paul', 'John', 'Mary'],
     };
-  },
-  watch: {
-    '$route.params.id': 'onChannelChanged',
   },
   methods: {
     sendMessage() {
@@ -74,10 +73,74 @@ export default {
           user: 'Me', // todo set the user
           text: [this.newMessage],
         });
-        this.newMessage = '';
         // Example notification, set forceBoth to true to show both browser & toasty notification
         this.sendNotif(`New Message in ${this.currentChannel}`, {}, true);
+        switch (true) {
+          case this.newMessage === '/list':
+            this.listMembers();
+            break;
+          case this.newMessage === '/quit':
+            this.quitChannel();
+            break;
+          case this.newMessage === '/cancel':
+            this.cancelChannel();
+            break;
+          case this.newMessage.startsWith('/join '):
+            this.joinChannel(this.newMessage.substring(this.newMessage.indexOf(' ') + 1));
+            break;
+          case this.newMessage.startsWith('/invite '):
+            this.inviteUser(this.newMessage.substring(this.newMessage.indexOf(' ') + 1));
+            break;
+          case this.newMessage.startsWith('/revoke '):
+            this.revokeInvite(this.newMessage.substring(this.newMessage.indexOf(' ') + 1));
+            break;
+          case this.newMessage.startsWith('/kick '):
+            this.kickUser(this.newMessage.substring(this.newMessage.indexOf(' ') + 1));
+            break;
+        }
+        this.newMessage = '';
       }
+    },
+    listMembers() {
+      this.messages.push({
+        id: Date.now(),
+        user: 'Server',
+        text: [this.members.join(', ')],
+      });
+    },
+    quitChannel() {
+      if (this.currentChannel === 'general') {
+        this.sendNotif('You cannot quit the general channel', {}, true);
+        return;
+      }
+      channelsStore.quitChannel(this.currentChannel);
+      this.$router.push('/');
+    },
+    joinChannel(channelName) {
+      channelsStore.joinChannel(channelName);
+    },
+    inviteUser(user) {
+      this.members.push(user);
+      this.sendNotif(`user '${user}' has been invited to the channel`, {}, true);
+    },
+    revokeInvite() {
+
+    },
+    kickUser(user) {
+      const index = this.members.indexOf(user);
+      if (index === -1) {
+        this.sendNotif(`user '${user}' is not in the channel`, {}, true);
+        return;
+      }
+      if (index === 0) {
+        this.sendNotif('You cannot kick yourself', {}, true);
+        return;
+      }
+      this.members.splice(index, 1);
+      this.sendNotif(`user '${user}' has been kicked from the channel`, {}, true);
+    },
+    cancelChannel() {
+      this.quitChannel();
     },
     // todo fetch messages
     sendNotif(title, options, forceBoth) {
@@ -123,11 +186,6 @@ export default {
         done()
       }, 1000)
     },
-    onChannelChanged() {
-      this.messages = [];
-      this.endOfChat = false;
-      this.currentChannel = this.$route.params.id || 'general';
-    }
   },
 };
 </script>
