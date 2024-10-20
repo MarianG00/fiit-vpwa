@@ -28,10 +28,8 @@
       style="display: flex; flex-direction: column"
     >
       <q-list style="flex-grow: 1">
-        <q-item clickable v-ripple to="/" exact>
-          <h5>
-            Channels
-          </h5>
+        <q-item>
+          <div class="text-h6">Channels</div>
         </q-item>
 
         <!--todo highlighted channels-->
