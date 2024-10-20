@@ -5,7 +5,7 @@ const routes: RouteRecordRaw[] = [
     path: '/',
     component: () => import('layouts/MainLayout.vue'),
     children: [
-      { path: '', redirect: 'channel/general' },
+      { path: '', redirect: '/channel/general' },
       {
         path: 'channel/:id',
         component: () => import('pages/ChatComponent.vue'),
