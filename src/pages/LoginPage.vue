@@ -8,7 +8,6 @@
 //import { ref } from 'vue';
 //import { Meta } from 'components/models';
 import LoginForm from 'components/LoginForm.vue';
-
 defineOptions({
   name: 'LoginPage',
 });

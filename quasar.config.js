@@ -90,6 +90,7 @@ module.exports = configure(function (/* ctx */) {
       config: {
         brand: {
           primary: '#3584db',
+          passive: '#c70000',
         },
       },
 

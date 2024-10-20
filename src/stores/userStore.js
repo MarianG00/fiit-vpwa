@@ -8,6 +8,10 @@ export const userStore = reactive({
     email: '',
     isAuthenticated: false,
     status: '',
+    avatar: 'src/assets/default_avatar1.jpg',
+    options: {
+      notifications: '1',
+    },
   },
 
   updateUser(key, value) {
