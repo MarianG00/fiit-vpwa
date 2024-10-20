@@ -239,7 +239,9 @@
                   </q-menu>
                 </q-item>
                 <q-item clickable v-close-popup style="padding: 16px">
-                  <q-item-section @click="onLogOut">Log Out</q-item-section>
+                  <q-item-section @click="onLogOut" style="color: red"
+                    >Log Out</q-item-section
+                  >
                 </q-item>
               </q-menu>
             </div>
