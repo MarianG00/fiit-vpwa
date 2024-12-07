@@ -110,7 +110,7 @@ export default {
 
     const register = async () => {
       try {
-        const response = await axios.post('http://localhost:65104/register', {
+        const response = await axios.post('http://localhost:3333/api/v1/users/register', {
           email: email.value,
           password: password.value,
           firstName: firstName.value,

@@ -51,6 +51,7 @@ import { ref } from 'vue';
 import { useRouter } from 'vue-router';
 import { useQuasar } from 'quasar';
 import { userStore } from '../stores/userStore';
+import axios from 'axios';
 
 export default {
   setup() {
@@ -60,31 +61,54 @@ export default {
     const form = ref(null);
     const $q = useQuasar();
 
+    const login = async () => {
+      try {
+        const response = await axios.post('http://localhost:3333/api/v1/users/login', {
+          email: email.value,
+          password: password.value,
+        });
+        console.log('Logged in:', response.data);
+        const notifAccess = () => {
+          if (Notification.permission !== 'granted') {
+            Notification.requestPermission();
+          }
+        };
+      notifAccess();
+      if (userStore.login(response.data['user'])) {
+        $q.notify({
+          type: 'positive',
+          message: `Logged in as ${userStore.current_user.nick}`,
+          timeout: 2500,
+        });
+      }
+      router.push('/');
+        router.push('/');
+      } catch (error) {
+        console.error('Login error:', error);
+        $q.notify({
+          type: 'error',
+          message: 'An error occurred',
+          timeout: 2500,
+        });
+      }
+    };
+
+    const onSubmit = () => {
+      form.value.validate().then((isValid) => {
+        if (isValid) {
+          login();
+        } else {
+          console.log('Form is invalid');
+        }
+      });
+    };
+
     return {
       email,
       password,
       form,
       userStore,
-
-      onSubmit() {
-        if (form.value && form.value.validate()) {
-          const notifAccess = () => {
-            if (Notification.permission !== 'granted') {
-              Notification.requestPermission();
-            }
-          };
-          notifAccess();
-          if (userStore.login(email.value, password.value)) {
-            $q.notify({
-              type: 'positive',
-              message: `Logged in as ${userStore.current_user.nick}`,
-              timeout: 2500,
-            });
-          }
-          router.push('/');
-        }
-      },
-
+      onSubmit,
       onReset() {
         email.value = null;
         password.value = null;

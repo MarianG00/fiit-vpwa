@@ -22,17 +22,13 @@ export const userStore = reactive({
     }
   },
 
-  login(email, password) {
-    if (email.includes('@')) {
-      this.current_user.email = email;
-      this.current_user.nick = 'Johnny';
-    } else {
-      this.current_user.nick = email;
-      this.current_user.email = 'john.doe@example.com';
-    }
+  login(user) {
+    this.current_user.email = user.email;
     this.current_user.isAuthenticated = true;
-    password;
-    this.current_user.status = 'Offline';
+    this.current_user.status = user.status;
+    this.current_user.nick = user.username;
+    this.current_user.name = user.firstName;
+    this.current_user.lastName = user.lastName;
     return true;
   },
 
