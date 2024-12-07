@@ -14,6 +14,7 @@
   },
   "dependencies": {
     "@quasar/extras": "^1.16.4",
+    "axios": "^1.7.9",
     "quasar": "^2.16.0",
     "vpwa-project": "file:",
     "vue": "^3.4.18",

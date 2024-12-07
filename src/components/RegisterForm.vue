@@ -30,10 +30,7 @@
               v-model="lastName"
               label="Last name"
               lazy-rules
-              :rules="[
-                (val) =>
-                  (val !== null && val !== '') || 'Last name is required',
-              ]"
+              :rules="[ (val) => (val !== null && val !== '') || 'Last name is required' ]"
               class="full-width"
             />
           </div>
@@ -52,34 +49,23 @@
           v-model="email"
           label="Email"
           lazy-rules
-          :rules="[
-            (val) => !!val || 'Email is required',
-            (val) => /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(val) || 'Invalid email',
-          ]"
+          :rules="[ (val) => !!val || 'Email is required', (val) => /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(val) || 'Invalid email']"
         />
-
         <q-input
           filled
           type="password"
           v-model="password"
           label="Password"
           lazy-rules
-          :rules="[
-            (val) => (val !== null && val !== '') || 'Password is required',
-          ]"
+          :rules="[ (val) => (val !== null && val !== '') || 'Password is required' ]"
         />
-
         <q-input
           filled
           type="password"
           v-model="passwordRepeat"
           label="Confirm Password"
           lazy-rules
-          :rules="[
-            (val) =>
-              (val !== null && val !== '') || 'Please confirm your password',
-            (val) => val == password || 'Passwords must match',
-          ]"
+          :rules="[ (val) => (val !== null && val !== '') || 'Please confirm your password', (val) => val == password || 'Passwords must match' ]"
         />
 
         <div>
@@ -98,35 +84,62 @@
 <script>
 import { ref } from 'vue';
 import { useRouter } from 'vue-router';
+import axios from 'axios';
+import { useQuasar } from 'quasar';
 
 export default {
   setup() {
-    const email = ref(null);
-    const password = ref(null);
-    const passwordRepeat = ref(null);
-    const firstName = ref(null);
-    const lastName = ref(null);
-    const router = useRouter();
+    const email = ref('');
+    const password = ref('');
+    const passwordRepeat = ref('');
+    const firstName = ref('');
+    const lastName = ref('');
+    const nickName = ref('');
     const form = ref(null);
-    const nickName = ref(null);
+    const router = useRouter();
+    const $q = useQuasar();
 
     const onReset = () => {
-      email.value = null;
-      password.value = null;
-      firstName.value = null;
-      lastName.value = null;
-      passwordRepeat.value = null;
-      nickName.value = null;
+      email.value = '';
+      password.value = '';
+      passwordRepeat.value = '';
+      firstName.value = '';
+      lastName.value = '';
+      nickName.value = '';
+    };
+
+    const register = async () => {
+      try {
+        const response = await axios.post('http://localhost:65104/register', {
+          email: email.value,
+          password: password.value,
+          firstName: firstName.value,
+          lastName: lastName.value,
+          nickName: nickName.value,
+        });
+        console.log('Registered:', response.data);
+        $q.notify({
+          type: 'success',
+          message: 'Successfully registered',
+          timeout: 2500,
+        });
+        router.push('/login');
+      } catch (error) {
+        console.error('Registration error:', error);
+        $q.notify({
+          type: 'error',
+          message: 'An error occurred',
+          timeout: 2500,
+        });
+      }
     };
 
     const onRegister = () => {
       form.value.validate().then((isValid) => {
         if (isValid) {
-          router.push('/login');
+          register();
         } else {
           console.log('Form is invalid');
-          console.log(password.value);
-          console.log(passwordRepeat.value);
         }
       });
     };
@@ -142,11 +155,12 @@ export default {
       passwordRepeat,
       firstName,
       lastName,
-      form,
       nickName,
+      form,
       onRegister,
       onReset,
       onBack,
+      $q,
     };
   },
 };
