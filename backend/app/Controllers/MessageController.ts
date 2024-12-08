@@ -123,7 +123,7 @@ export default class MessageController {
       return response.status(404).send({message: 'Chat not found'})
     }
 
-    const messages = await Message.query().where('chat', chatid).limit(5).offset(index * 5)
+    const messages = await Message.query().where('chat', chatid).orderBy('created_at', 'desc').limit(5).offset(index * 5)
     if (messages.length === 0) {
       return response.status(200).send([])
     }

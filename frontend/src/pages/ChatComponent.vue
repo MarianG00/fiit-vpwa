@@ -111,8 +111,13 @@ export default {
       });
     },
     quitChannel() {
-      if (this.currentChannel === 'general') {
-        this.sendNotif('You cannot quit the general channel', {}, true);
+      console.log(this.currentChannel);
+      if (this.currentChannel === 1) {
+        this.$q.notify({
+          type: 'info',
+          message: 'You cannot quit the general channel',
+          timeout: 2500,
+        });
         return;
       }
       channelsStore.quitChannel(this.currentChannel);
@@ -161,20 +166,23 @@ export default {
     },
     async onLoad (index, done) {
       try {
-        const resp = await axios.get(`http://localhost:3333/api/v1/messages/chatlist/${this.currentChannel}/${index++}`);
+        console.log(index);
+        const resp = await axios.get(`http://localhost:3333/api/v1/messages/chatlist/${this.currentChannel}/${index - 1}`);
         if (resp.data.length < 10)
           this.endOfChat = true;
-        this.messages.push(...resp.data.map(a => ({
+        const parsed = resp.data.map(a => ({
           id: a.id,
           text: [a.body],
           createdByUsername: a.createdBy.username,
           createdById: a.createdBy.id
-        })));
+        }))
+        parsed.reverse();
+        this.messages.unshift(...parsed);
+        done()
       }catch(err) {
         this.endOfChat = true;
         console.log('no messages');
       }
-      done()
     },
   },
 };
