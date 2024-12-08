@@ -292,6 +292,7 @@ import { userStore } from 'stores/userStore';
 import { ref, watch } from 'vue';
 import { channelsStore } from 'stores/channelsStore';
 import axios from 'axios';
+import { connect } from '../ws';
 
 
 export default {
@@ -306,6 +307,7 @@ export default {
       try {
         const user = JSON.parse(localStorage.getItem('user'));
         userStore.login(user, null);
+        connect();
       } catch (e) {
         console.error(e);
         router.push('/login');

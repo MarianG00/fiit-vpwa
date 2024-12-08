@@ -1,15 +1,43 @@
-import { WebSocketServer } from 'ws';
+import { WebSocketServer, WebSocket } from 'ws';
+import axios from 'axios';
 
 console.log('Starting WebSocket server...');
 
 const wss = new WebSocketServer({ port: 8080 });
 
-wss.on('connection', function connection(ws) {
+type UserWS = { ws: WebSocket, userId: string };
+let users: UserWS[] = [];
+
+wss.on('connection', (ws, req) => {
+  const userId = new URL(req.url!, `http://${req.headers.host}`).searchParams.get('userId')!;
+
+  users.push({ ws, userId });
+
   ws.on('error', console.error);
 
-  ws.on('message', function message(data) {
-    console.log('received: %s', data);
+  ws.on('message', data => {
+    type Data = {
+      message: string,
+      channelId: number
+    }
+
+    const parsedData: Data = JSON.parse(data.toString());
+    console.log('received', parsedData);
+
+    axios.post('http://localhost:3333/api/v1/messages/create', {
+      body: parsedData.message,
+      createdBy: userId,
+      chat: parsedData.channelId
+    });
+
+    users.forEach(user => {
+      if (user.userId !== userId) {
+        user.ws.send(data);
+      }
+    });
   });
 
-  ws.send('something');
+  ws.on('close', () => {
+    users = users.filter(user => user.ws !== ws);
+  })
 });
