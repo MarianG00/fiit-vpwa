@@ -123,3 +123,10 @@ router.group(() => {
     return new MessageController().find(ctx)
   })
 }).prefix('api/v1/messages/')
+
+router.group(() => {
+  router.put('update/:user_id', async (ctx) => {
+    const {default: UserOptionsController} = await import('#controllers/UserOptionsController')
+    return new UserOptionsController().update(ctx)
+  })
+}).prefix('api/v1/user_options')

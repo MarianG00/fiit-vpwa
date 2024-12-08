@@ -79,16 +79,16 @@
               >
                 <q-icon
                   :name="
-                    userStore.current_user.status == 'Online'
+                    userStore.current_user.options.status == 'Online'
                       ? 'circle'
-                      : userStore.current_user.status == 'Offline'
+                      : userStore.current_user.options.status == 'Offline'
                       ? 'mode_night'
                       : 'do_not_disturb_on'
                   "
                   :color="
-                    userStore.current_user.status == 'Online'
+                    userStore.current_user.options.status == 'Online'
                       ? 'green'
-                      : userStore.current_user.status == 'Offline'
+                      : userStore.current_user.options.status == 'Offline'
                       ? 'yellow'
                       : 'red'
                   "
@@ -112,16 +112,16 @@
                     <q-item-section side>
                       <q-icon
                         :name="
-                          userStore.current_user.status == 'Online'
+                          userStore.current_user.options.status == 'Online'
                             ? 'circle'
-                            : userStore.current_user.status == 'Offline'
+                            : userStore.current_user.options.status == 'Offline'
                             ? 'mode_night'
                             : 'do_not_disturb_on'
                         "
                         :color="
-                          userStore.current_user.status == 'Online'
+                          userStore.current_user.options.status == 'Online'
                             ? 'green'
-                            : userStore.current_user.status == 'Offline'
+                            : userStore.current_user.options.status == 'Offline'
                             ? 'yellow'
                             : 'red'
                         "
@@ -130,7 +130,7 @@
 
                     <q-item-section
                       style="min-width: 100px; max-width: none; flex-grow: 1"
-                      >{{ userStore.current_user.status }}</q-item-section
+                      >{{ userStore.current_user.options.status }}</q-item-section
                     >
                     <q-item-section side>
                       <q-icon name="keyboard_arrow_right" />
@@ -145,7 +145,7 @@
                         <q-item>
                           <q-item-section>
                             <q-radio
-                              v-model="userStore.current_user.status"
+                              v-model="userStore.current_user.options.status"
                               val="Online"
                               label="Online"
                             />
@@ -155,7 +155,7 @@
                         <q-item>
                           <q-item-section>
                             <q-radio
-                              v-model="userStore.current_user.status"
+                              v-model="userStore.current_user.options.status"
                               val="Offline"
                               label="Offline"
                             />
@@ -167,7 +167,7 @@
                             style="min-width: 100px; max-width: none"
                           >
                             <q-radio
-                              v-model="userStore.current_user.status"
+                              v-model="userStore.current_user.options.status"
                               val="Do Not Disturb"
                               label="Do Not Disturb"
                               style="min-width: auto"
@@ -201,7 +201,7 @@
                             v-model="
                               userStore.current_user.options.notifications
                             "
-                            val="0"
+                            val="Off"
                             label="Off"
                           />
                         </q-item-section>
@@ -213,7 +213,7 @@
                             v-model="
                               userStore.current_user.options.notifications
                             "
-                            val="1"
+                            val="On"
                             label="On"
                           />
                         </q-item-section>
@@ -227,7 +227,7 @@
                             v-model="
                               userStore.current_user.options.notifications
                             "
-                            val="2"
+                            val="Me Only"
                             label="Me Only"
                             style="min-width: auto"
                           />
@@ -278,22 +278,35 @@ export default {
       }
     }
     watch(
-      () => userStore.current_user.status,async (newStatus, oldStatus) => {
-        const response = await axios.post(`http://localhost:3333/api/v1/users/update/${userStore.current_user.id}`, {
-          status: newStatus,
-          prev_status: oldStatus,
+      () => userStore.current_user.options.status,async (newStatus, oldStatus) => {
+        const response = await axios.put(`http://localhost:3333/api/v1/user_options/update/${userStore.current_user.id}`, {
+            status: newStatus,
+          })
+        if(response.status != 200) {
+          $q.notify({
+            type: 'error',
+            message: 'Status update failed',
+          })
+          userStore.current_user.options.status = oldStatus;
+        }
+      }
+    )
+    watch(
+      () => userStore.current_user.options.notifications,async (newStatus, oldStatus) => {
+        const response = await axios.put(`http://localhost:3333/api/v1/user_options/update/${userStore.current_user.id}`, {
+          notifications: newStatus,
         })
         if(response.status != 200) {
           $q.notify({
             type: 'error',
             message: 'Status update failed',
           })
-          userStore.current_user.status = oldStatus;
+          userStore.current_user.options.notifications = oldStatus;
         }
       }
     )
     const logout = async () => {
-      const response = await axios.post('http://localhost:3333/api/v1/users/logout', {userToken: userStore.token});
+      const response = await axios.put('http://localhost:3333/api/v1/users/logout', {userToken: userStore.token});
       console.log('Logged out: ', response);
       if (response.status === 200) {
         router.push('/login');

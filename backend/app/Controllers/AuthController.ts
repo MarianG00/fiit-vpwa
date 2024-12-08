@@ -1,6 +1,7 @@
 import { HttpContext } from '@adonisjs/core/http'
 import User from '#models/user'
 import hash from "@adonisjs/core/services/hash";
+import UserOptions from "#models/user_options";
 
 export default class AuthController {
   public async register({ request, response }: HttpContext) {
@@ -15,6 +16,12 @@ export default class AuthController {
       username: user_details.nickName,
     }
     const user = await User.create(user_details)
+    console.log(user)
+    const options = await UserOptions.create({})
+    const data = {'options': options.id};
+    console.log(options)
+    user.merge(data)
+    user.save()
     return response.created(user)
   }
 
@@ -42,6 +49,8 @@ export default class AuthController {
     if (!userToken) {
       return response.internalServerError({message: 'Failed to get token'})
     }
+    user.options = await UserOptions.findBy('id', user.options)
+    console.log(user)
     return response.ok({ userToken: auth.user, user })
   }
 
