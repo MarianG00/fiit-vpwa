@@ -21,11 +21,20 @@ export default class ChatController {
 
   public async create(ctx: HttpContext) {
     const {params, request, response}: HttpContext = ctx
-    const data = request.only(['name', 'administrator', 'private'])
+    const data = request.only(['name', 'administrator', 'private', 'created_by'])
     data['last_update'] = new Date(Date.now())
 
+    const user = await User.findBy('id', data['created_by'])
+    if (!user) {
+      return response.status(404).send('User not found')
+    }
     const chat = await Chat.create(data)
     await chat.save()
+
+    let memb_data = {'user': data['created_by'], 'chat': chat.id, 'role': 0, "last_updated": new Date(Date.now())}
+    const membr = await ChatMembership.create(memb_data)
+    await membr.save()
+
     return response.status(201).send(chat)
   }
 
@@ -42,7 +51,7 @@ export default class ChatController {
 
   public async list(ctx: HttpContext) {
     const {params, request, response}: HttpContext = ctx
-    const userid = params.userid
+    const userid = params.id
 
     // Find the user by id
     const user = await User.findBy('id', userid)
@@ -60,18 +69,17 @@ export default class ChatController {
     const chat_ids = chat_membs.map(membership => membership.chat) // Assuming `chat_id` is the column
 
     // Fetch chats using `whereIn` to get multiple chats
-    const chats = await Chat.query().whereIn('id', chat_ids)
+    const chats = await Chat.query().whereIn('id', chat_ids).orWhere('private', false)
 
     return response.status(200).send(chats)
   }
-  public async find(ctx: HttpContext) {
+  public async get_chat(ctx: HttpContext) {
     const {params, request, response}: HttpContext = ctx
-    const id = params.id
+    const chatid = params.chat_id
 
-    const chat = Chat.findBy('id', id)
-    if (!chat) {
-      return response.status(404).send({message: 'Chat not found'})
-    }
-    return response.status(200).send(chat)
+    // Fetch chats using `whereIn` to get multiple chats
+    const chats = await Chat.findBy('id', chatid)
+
+    return response.status(200).send(chats)
   }
 }

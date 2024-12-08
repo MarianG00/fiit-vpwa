@@ -13,7 +13,8 @@ export const userStore = reactive({
     options: {
       notifications: '1',
       status: 'Online'
-    },
+    }, activeChat: {}
+
   },
 
   updateUser(key, value) {
