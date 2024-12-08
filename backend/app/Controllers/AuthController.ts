@@ -15,6 +15,7 @@ export default class AuthController {
       last_name: user_details.lastName,
       username: user_details.nickName,
     }
+    const general = {''}
     const user = await User.create(user_details)
     console.log(user)
     const options = await UserOptions.create({})

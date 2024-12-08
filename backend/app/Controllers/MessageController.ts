@@ -124,7 +124,7 @@ export default class MessageController {
 
     const messages = await Message.query().where('chat', chatid)
     if (messages.length === 0) {
-      return response.status(404).send({message: 'No messages found'})
+      return response.status(200).send([])
     }
     let temp
     for (const item of messages) {

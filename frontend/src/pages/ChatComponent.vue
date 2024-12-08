@@ -164,6 +164,7 @@ export default {
         this.endOfChat = true;
         return done()
       }
+      try {
       const resp = await axios.get(`http://localhost:3333/api/v1/messages/chatlist/${this.currentChannel}/`)
       this.messages = resp.data.map(a => ({
         id: a.id,
@@ -171,6 +172,9 @@ export default {
         createdByUsername: a.createdBy.username,
         createdById: a.createdBy.id
       }));
+      }catch(err) {
+        console.log('no messages');
+      }
       console.log('messages', this.messages);
       done()
     },
