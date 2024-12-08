@@ -73,6 +73,10 @@ router.group(() => {
     const {default: ChatMembershipController} = await import('#controllers/ChatMembershipController')
     return new ChatMembershipController().find(ctx)
   })
+  router.get('/members/:chat_id', async (ctx) => {
+    const {default: ChatMembershipController} = await import('#controllers/ChatMembershipController')
+    return new ChatMembershipController().members(ctx)
+  })
 }).prefix('api/v1/chat_memberships/')
 
 router.group(() => {

@@ -68,4 +68,24 @@ export default class ChatMembershipController {
     }
     return response.status(200).send(chat)
   }
+  public async members(ctx: HttpContext) {
+    const {params, request, response}: HttpContext = ctx
+    const id = params.chat_id;
+    const chat = await Chat.findBy('id', id)
+    if (!chat) {
+      return response.status(404).send({message: 'Chat not found'})
+    }
+    const membs = await ChatMembership.query().where('chat', id)
+    if(membs.length === 0) {
+      return response.status(404).send({message: 'No chat memberships found'})
+    }
+    const users = membs.map((membership) => membership.user);
+    const user_objects = User.query().whereIn('id', users)
+    for (const user of users) {
+      user.toJSON()
+    }
+    return response.status(200).send(user_objects)
+
+
+  }
 }
