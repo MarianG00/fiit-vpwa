@@ -1,9 +1,7 @@
 <template>
   <q-page padding>
     <div class="q-pa-md">
-      <div class="text-center" v-if="endOfChat">
-        End of chat
-      </div>
+      <div class="text-center" v-if="endOfChat">End of chat</div>
       <q-infinite-scroll @load="onLoad" reverse>
         <template v-slot:loading>
           <div class="row justify-center q-my-md">
@@ -14,9 +12,9 @@
         <q-chat-message
           v-for="msg in messages"
           :key="msg.id"
-          :text="msg.body"
-          :name="msg.createdBy.username"
-          :sent="msg.createdBy === userStore.current_user"
+          :text="msg.text"
+          :name="msg.createdByUsername"
+          :sent="msg.createdById === userStore.current_user.id"
         />
       </q-infinite-scroll>
     </div>
@@ -159,14 +157,20 @@ export default {
       }
     },
     async onLoad (index, done) {
+      done();
       if (index > 5) {
         this.endOfChat = true;
         return done()
       }
       const resp = await axios.get(`http://localhost:3333/api/v1/messages/chatlist/${this.currentChannel}/`)
-      console.log(resp)
-      this.messages=resp.data;
-
+      this.messages = resp.data.map(a => ({
+        id: a.id,
+        text: [a.body],
+        createdByUsername: a.createdBy.username,
+        createdById: a.createdBy.id
+      }));
+      console.log('messages', this.messages);
+      done()
     },
   },
 };
