@@ -9,10 +9,7 @@ npm install
 
 ### Create `.env` file based on `.env.example` file
 
-### Run database migrations
-```bash
-node ace migration:run
-```
+### Run database DDL script `create_db.sql` in your database
 
 ### start the server
 ```bash
