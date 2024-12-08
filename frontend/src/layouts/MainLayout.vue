@@ -28,6 +28,11 @@
       style="display: flex; flex-direction: column"
     >
       <q-list style="flex-grow: 1">
+        <q-item clickable v-ripple to="/" exact>
+          <q-item-section>
+            <q-btn icon="add" label="New Channel" flat @click="showDialog=true" />
+          </q-item-section>
+        </q-item>>
         <q-item>
           <div class="text-h6">Channels</div>
         </q-item>
@@ -268,6 +273,7 @@ export default {
 
     const router = useRouter();
     const $q = useQuasar();
+
     if (!userStore.current_user.isAuthenticated) {
       try {
         const user = JSON.parse(localStorage.getItem('user'));
@@ -326,6 +332,7 @@ export default {
     return {
       onLogOut,
       userStore,
+      showDialog: false,
     };
   },
 
@@ -349,6 +356,10 @@ export default {
     createChannel() {
       const newChannel = prompt('Enter new channel name:');
       if (newChannel) {
+        const data = {
+          'name': newChannel
+        }
+        console.log(data)
         this.channels.push({
           id: newChannel.toLowerCase().replace(/\s+/g, '-'),
           name: newChannel,
@@ -365,5 +376,9 @@ export default {
 }
 .invite {
   background-color: #f3e5f5;
+}
+.custom-backdrop {
+  backdrop-filter: blur(4px) saturate(150%);
+  -webkit-backdrop-filter: blur(4px) saturate(150%);
 }
 </style>
