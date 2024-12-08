@@ -2,6 +2,7 @@ import {HttpContext} from "@adonisjs/core/http";
 import User from "#models/user";
 import Chat from "#models/chat";
 import ChatMembership from "#models/chat_membership";
+import Message from "#models/message";
 
 export default class ChatController {
   public async update(ctx: HttpContext) {
@@ -39,9 +40,12 @@ export default class ChatController {
   }
 
   public async delete(ctx: HttpContext) {
-    const {params, request, response}: HttpContext = ctx
-    const id = params
-    const chat = await Chat.findBy('id', id['chatid'])
+    const { params, request, response }: HttpContext = ctx
+    const id = params.id
+    console.log(params)
+    await ChatMembership.query().where('chat', id).delete();
+    await Message.query().where('chat', id).delete();
+    const chat = await Chat.findBy('id', id)
     if (!chat) {
       return response.status(404).send('Chat not found')
     }

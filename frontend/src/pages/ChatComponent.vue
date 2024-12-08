@@ -111,15 +111,6 @@ export default {
       });
     },
     quitChannel() {
-      console.log(this.currentChannel);
-      if (this.currentChannel === 1) {
-        this.$q.notify({
-          type: 'info',
-          message: 'You cannot quit the general channel',
-          timeout: 2500,
-        });
-        return;
-      }
       channelsStore.quitChannel(this.currentChannel);
       this.$router.push('/');
     },
@@ -166,7 +157,6 @@ export default {
     },
     async onLoad (index, done) {
       try {
-        console.log(index);
         const resp = await axios.get(`http://localhost:3333/api/v1/messages/chatlist/${this.currentChannel}/${index - 1}`);
         if (resp.data.length < 10)
           this.endOfChat = true;

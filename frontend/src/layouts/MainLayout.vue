@@ -405,8 +405,7 @@ export default {
   },
   computed: {
     sortedChannels() {
-      // todo sort also by other criteria
-      return channelsStore.channels.toSorted(
+      return channelsStore.channels.slice().sort(
         (a, b) => (b.invite || 0) - (a.invite || 0)
       );
     },
