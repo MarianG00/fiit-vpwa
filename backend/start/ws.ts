@@ -5,11 +5,13 @@ console.log('Starting WebSocket server...');
 
 const wss = new WebSocketServer({ port: 8080 });
 
-type UserWS = { ws: WebSocket, userId: string };
+type UserWS = { ws: WebSocket, userId: number };
 let users: UserWS[] = [];
 
 wss.on('connection', (ws, req) => {
-  const userId = new URL(req.url!, `http://${req.headers.host}`).searchParams.get('userId')!;
+  const params = new URL(req.url!, `http://${req.headers.host}`).searchParams;
+  const userId = +params.get('userId')!;
+  const username = params.get('username')!;
 
   users.push({ ws, userId });
 
@@ -30,10 +32,16 @@ wss.on('connection', (ws, req) => {
       chat: parsedData.channelId
     });
 
+    const response = {
+      message: parsedData.message,
+      channelId: parsedData.channelId,
+      userId: userId,
+      username: username
+    }
+    console.log('sending', response);
+    console.log('users', users);
     users.forEach(user => {
-      if (user.userId !== userId) {
-        user.ws.send(data);
-      }
+      user.ws.send(JSON.stringify(response), { binary: false });
     });
   });
 

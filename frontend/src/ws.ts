@@ -1,9 +1,11 @@
 let socket: WebSocket;
+// eslint-disable-next-line
+let onNewMessages: any;
 
 function connect() {
   const userString = localStorage.getItem('user')!;
-  const userId = JSON.parse(userString).id
-  socket = new WebSocket(`ws://localhost:8080/socket?userId=${userId}`);
+  const user = JSON.parse(userString)
+  socket = new WebSocket(`ws://localhost:8080/socket?userId=${user.id}&username=${user.username}`);
 
   socket.onopen = () => {
     console.log('WebSocket connection established');
@@ -18,7 +20,7 @@ function connect() {
   };
 
   socket.onmessage = async (event) => {
-    const data = JSON.parse(await event.data.text());
+    const data = JSON.parse(event.data);
     console.log('Received message via websockets:', data);
     const message = data.message;
     const channelId = data.channelId;
@@ -26,12 +28,19 @@ function connect() {
     console.log('Channel ID:', channelId);
     if (window.location.href.includes(`/channel/${channelId}`)) {
       console.log('Appending message to chat');
-      // const chat = document.getElementById('chat')!;
-      // const messageElement = document.createElement('div');
-      // messageElement.innerText = message;
-      // chat.appendChild(messageElement);
+      onNewMessages!({
+        id: channelId,
+        text: [message],
+        createdByUsername: data.username,
+        createdById: data.userId
+      });
     }
   };
+}
+
+// eslint-disable-next-line
+function setOnNewMessages(callback: any) {
+  onNewMessages = callback;
 }
 
 
@@ -49,4 +58,4 @@ function close() {
   socket.close();
 }
 
-export { send, close, connect };
+export { send, close, connect, setOnNewMessages };

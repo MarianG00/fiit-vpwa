@@ -42,7 +42,7 @@ import { channelsStore } from 'stores/channelsStore';
 import { userStore } from 'stores/userStore';
 import UserTyping from 'src/components/UserTyping.vue';
 import axios from 'axios';
-import { send } from  '../ws';
+import { send, setOnNewMessages } from  '../ws';
 
 export default {
   setup() {
@@ -62,46 +62,44 @@ export default {
       messages: [],
       currentChannel: this.$route.params.id,
       endOfChat: false,
-      members: ['You', 'Paul', 'John', 'Mary'],
+      members: [],
     };
+  },
+  mounted() {
+    setOnNewMessages((message) => {
+      this.messages.push(message);
+      console.log(this.messages);
+      console.log(userStore.current_user.id);
+    });
   },
   methods: {
     sendMessage() {
       send(this.newMessage);
-
-      if (this.newMessage) {
-        // todo get from BE
-        this.messages.push({
-          id: Date.now(),
-          user: userStore.current_user.id,
-          text: [this.newMessage],
-        });
-        this.sendNotif(`New Message in ${this.currentChannel}`, {}, true);
-        switch (true) {
-          case this.newMessage === '/list':
-            this.listMembers();
-            break;
-          case this.newMessage === '/quit':
-            this.quitChannel();
-            break;
-          case this.newMessage === '/cancel':
-            this.cancelChannel();
-            break;
-          case this.newMessage.startsWith('/join '):
-            this.joinChannel(this.newMessage.substring(this.newMessage.indexOf(' ') + 1));
-            break;
-          case this.newMessage.startsWith('/invite '):
-            this.inviteUser(this.newMessage.substring(this.newMessage.indexOf(' ') + 1));
-            break;
-          case this.newMessage.startsWith('/revoke '):
-            this.revokeInvite(this.newMessage.substring(this.newMessage.indexOf(' ') + 1));
-            break;
-          case this.newMessage.startsWith('/kick '):
-            this.kickUser(this.newMessage.substring(this.newMessage.indexOf(' ') + 1));
-            break;
-        }
-        this.newMessage = '';
+      this.sendNotif(`New Message in ${this.currentChannel}`, {}, true);
+      switch (true) {
+        case this.newMessage === '/list':
+          this.listMembers();
+          break;
+        case this.newMessage === '/quit':
+          this.quitChannel();
+          break;
+        case this.newMessage === '/cancel':
+          this.cancelChannel();
+          break;
+        case this.newMessage.startsWith('/join '):
+          this.joinChannel(this.newMessage.substring(this.newMessage.indexOf(' ') + 1));
+          break;
+        case this.newMessage.startsWith('/invite '):
+          this.inviteUser(this.newMessage.substring(this.newMessage.indexOf(' ') + 1));
+          break;
+        case this.newMessage.startsWith('/revoke '):
+          this.revokeInvite(this.newMessage.substring(this.newMessage.indexOf(' ') + 1));
+          break;
+        case this.newMessage.startsWith('/kick '):
+          this.kickUser(this.newMessage.substring(this.newMessage.indexOf(' ') + 1));
+          break;
       }
+      this.newMessage = '';
     },
     listMembers() {
       this.messages.push({
@@ -144,7 +142,6 @@ export default {
     cancelChannel() {
       this.quitChannel();
     },
-    // todo fetch messages
     sendNotif(title, options, forceBoth) {
       if (Notification.permission === 'granted') {
         if (this.$q.appVisible || forceBoth) {
@@ -175,7 +172,6 @@ export default {
       }catch(err) {
         console.log('no messages');
       }
-      console.log('messages', this.messages);
       done()
     },
   },
