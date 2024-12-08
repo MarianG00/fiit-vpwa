@@ -41,14 +41,15 @@ router.group(() => {
     const {default: ChatController} = await import('#controllers/ChatController')
     return new ChatController().delete(ctx)
   })
-  router.get('/list/:id', async (ctx) => {
+  router.get('list/:id', async (ctx) => {
     const {default: ChatController} = await import('#controllers/ChatController')
     return new ChatController().list(ctx)
   })
-  router.get('/:id', async (ctx) => {
+  router.get('get/:chat_id', async (ctx) => {
     const {default: ChatController} = await import('#controllers/ChatController')
-    return new ChatController().find(ctx)
+    return new ChatController().get_chat(ctx)
   })
+
 }).prefix('api/v1/chats/')
 
 router.group(() => {
@@ -114,7 +115,7 @@ router.group(() => {
     const {default: MessageController} = await import('#controllers/MessageController')
     return new MessageController().list(ctx)
   })
-  router.get('list/:chat_id', async (ctx) => {
+  router.get('chatlist/:chat_id', async (ctx) => {
     const {default: MessageController} = await import('#controllers/MessageController')
     return new MessageController().chatlist(ctx)
   })

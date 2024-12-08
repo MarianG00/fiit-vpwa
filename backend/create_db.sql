@@ -85,6 +85,7 @@ INSERT INTO "users" ("username", "first_name", "last_name", "email", "password",
 INSERT INTO "chats" ("name", "private", "administrator", "last_update", "created_by") VALUES ('General', false, 1, CURRENT_TIMESTAMP, 1);
 INSERT INTO "chat_memberships" ("user", "chat", "role", "created_by") VALUES (1, 1, 1, 1);
 INSERT INTO "messages" ("body", "chat", "created_by") VALUES ('Welcome to the chat!', 1, 1);
+INSERT INTO "chats_messages" ("chat", "message") VALUES (1, 1);
 
 -- Add Foreign Keys after table creation
 

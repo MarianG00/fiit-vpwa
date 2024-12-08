@@ -131,6 +131,11 @@ export default class MessageController {
       temp = await Attachments.query().where('message', item.id)
       item['attachments'] = temp
     }
+    for (const message of messages) {
+      temp = await User.findBy('id', message.created_by)
+      message['created_by'] = temp.toJSON()
+    }
+    console.log(messages)
     return response.status(200).send(messages)
   }
 }

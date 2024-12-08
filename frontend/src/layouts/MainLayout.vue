@@ -48,6 +48,7 @@
             highlight: channel.id === 'random',
             invite: channel.invite,
           }"
+          @click="showChat(channel.id)"
         >
           <q-item-section avatar>
             <q-icon name="chat" />
@@ -252,6 +253,31 @@
         </div>
       </div>
     </q-drawer>
+    <div class="q-pa-md q-gutter-sm">
+      <q-dialog  v-model="showDialog" class="custom-backdrop">
+        <q-card>
+          <q-card-section class="row items-center q-pb-none text-h6">
+            New Channel
+          </q-card-section>
+
+          <q-card-section>
+            <q-input
+              filled
+              type="text"
+              v-model="newChannel"
+              label="Channel name"
+              />
+            <q-checkbox v-model="newChannelPrivate" label="Private" color="teal" />
+
+          </q-card-section>
+
+          <q-card-actions align="right">
+            <q-btn flat label="Close" color="primary" v-close-popup/>
+            <q-btn flat label="Create" color="primary" v-close-popup @click="createChannel"/>
+          </q-card-actions>
+        </q-card>
+      </q-dialog>
+    </div>
 
     <q-page-container>
       <router-view />
@@ -263,7 +289,7 @@
 import { useRouter } from 'vue-router';
 import { useQuasar } from 'quasar';
 import { userStore } from 'stores/userStore';
-import { watch } from 'vue';
+import { ref, watch } from 'vue';
 import { channelsStore } from 'stores/channelsStore';
 import axios from 'axios';
 
@@ -273,6 +299,8 @@ export default {
 
     const router = useRouter();
     const $q = useQuasar();
+    const newChannel = ref(null);
+    const newChannelPrivate = ref(null);
 
     if (!userStore.current_user.isAuthenticated) {
       try {
@@ -312,7 +340,7 @@ export default {
       }
     )
     const logout = async () => {
-      const response = await axios.put('http://localhost:3333/api/v1/users/logout', {userToken: userStore.token});
+      const response = await axios.post('http://localhost:3333/api/v1/users/logout', {userToken: userStore.token});
       console.log('Logged out: ', response);
       if (response.status === 200) {
         router.push('/login');
@@ -328,17 +356,49 @@ export default {
       console.log('logout');
       logout();
     };
+    const createChannel = async () => {
+      if (newChannel.value) {
+        const data = {
+          'name': newChannel.value,
+          'private': newChannelPrivate.value,
+          'created_by': userStore.current_user.id,
+        }
+        console.log(data)
+        let resp = await axios.post('http://localhost:3333/api/v1/chats/create', data)
+        let new_channel = resp.data
+        channelsStore.channels.push(new_channel);
+      }
+    }
+    const loadChannels = async () => {
 
+      const resp = await axios.get(`http://localhost:3333/api/v1/chats/list/${userStore.current_user.id}`)
+      channelsStore.channels = []
+      if(resp.status === 200) {
+        channelsStore.channels = resp.data
+      }
+    }
+    loadChannels();
+
+    const showChat = async (val) => {
+      console.log(val)
+      const resp = await axios.get('http://localhost:3333/api/v1/chats/get/'+val)
+      console.log(resp.data)
+    }
     return {
       onLogOut,
       userStore,
-      showDialog: false,
+      createChannel,
+      newChannel,
+      newChannelPrivate,
+      showChat,
     };
   },
 
   data() {
     return {
       drawer: true,
+      showDialog: false,
+
     };
   },
   computed: {
@@ -353,19 +413,7 @@ export default {
     },
   },
   methods: {
-    createChannel() {
-      const newChannel = prompt('Enter new channel name:');
-      if (newChannel) {
-        const data = {
-          'name': newChannel
-        }
-        console.log(data)
-        this.channels.push({
-          id: newChannel.toLowerCase().replace(/\s+/g, '-'),
-          name: newChannel,
-        });
-      }
-    },
+
   },
 };
 </script>

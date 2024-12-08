@@ -1,9 +1,7 @@
 <template>
   <q-page padding>
     <div class="q-pa-md">
-      <div class="text-center" v-if="endOfChat">
-        End of chat
-      </div>
+      <div class="text-center" v-if="endOfChat">End of chat</div>
       <q-infinite-scroll @load="onLoad" reverse>
         <template v-slot:loading>
           <div class="row justify-center q-my-md">
@@ -15,8 +13,8 @@
           v-for="msg in messages"
           :key="msg.id"
           :text="msg.text"
-          :name="msg.user"
-          :sent="msg.user === 'Me'"
+          :name="msg.createdByUsername"
+          :sent="msg.createdById === userStore.current_user.id"
         />
       </q-infinite-scroll>
     </div>
@@ -43,6 +41,7 @@ import { useQuasar } from 'quasar';
 import { channelsStore } from 'stores/channelsStore';
 import { userStore } from 'stores/userStore';
 import UserTyping from 'src/components/UserTyping.vue';
+import axios from 'axios';
 
 export default {
   setup() {
@@ -70,7 +69,7 @@ export default {
       if (this.newMessage) {
         this.messages.push({
           id: Date.now(),
-          user: 'Me', // todo set the user
+          user: userStore.current_user, // todo set the user
           text: [this.newMessage],
         });
         // Example notification, set forceBoth to true to show both browser & toasty notification
@@ -157,34 +156,21 @@ export default {
         }
       }
     },
-    onLoad (index, done) {
+    async onLoad (index, done) {
+      done();
       if (index > 5) {
         this.endOfChat = true;
         return done()
       }
-      setTimeout(() => {
-        const newData = [
-          { id: 1, user: 'Me', text: ['Hello!'] },
-          { id: 2, user: 'User 2', text: ['Hi, how are you?'] },
-          { id: 3, user: 'Me', text: ['I am fine, thank you!'] },
-          { id: 4, user: 'User 2', text: ['Great!'] },
-          { id: 5, user: 'Me', text: ['How can I help you?'] },
-          { id: 6, user: 'User 2', text: ['I need help with my homework.'] },
-          { id: 7, user: 'Me', text: ['Sure, I can help you with that.'] },
-          { id: 8, user: 'User 2', text: ['Thank you!'] },
-          { id: 9, user: 'Me', text: ['You are welcome!'] },
-          { id: 10, user: 'User 2', text: ['Goodbye!'] },
-          { id: 11, user: 'Me', text: ['Goodbye!'] },
-          { id: 12, user: 'User 2', text: ['What is the best programming language?'] },
-          { id: 13, user: 'Me', text: ['It depends on what you want to do.'] },
-          { id: 14, user: 'User 2', text: ['I want to build a website.'] },
-          { id: 15, user: 'Me', text: ['You can use JavaScript.'] },
-          { id: 16, user: 'User 2', text: ['Thanks but no thanks'] },
-          { id: 17, user: 'Me', text: ['You are welcome!'] },
-        ];
-        this.messages = newData.concat(this.messages);
-        done()
-      }, 1000)
+      const resp = await axios.get(`http://localhost:3333/api/v1/messages/chatlist/${this.currentChannel}/`)
+      this.messages = resp.data.map(a => ({
+        id: a.id,
+        text: [a.body],
+        createdByUsername: a.createdBy.username,
+        createdById: a.createdBy.id
+      }));
+      console.log('messages', this.messages);
+      done()
     },
   },
 };

@@ -52,6 +52,7 @@ import { useRouter } from 'vue-router';
 import { useQuasar } from 'quasar';
 import { userStore } from '../stores/userStore';
 import axios from 'axios';
+import { channelsStore } from 'stores/channelsStore';
 
 export default {
   setup() {
@@ -60,7 +61,7 @@ export default {
     const router = useRouter();
     const form = ref(null);
     const $q = useQuasar();
-
+    channelsStore.channels = []
     const login = async () => {
 
       try {
