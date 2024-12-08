@@ -3,6 +3,7 @@ import { compose } from '@adonisjs/core/helpers'
 import {BaseModel, beforeSave, column} from '@adonisjs/lucid/orm'
 import { withAuthFinder } from '@adonisjs/auth/mixins/lucid'
 import hash from "@adonisjs/core/services/hash";
+import UserOptions from "#models/user_options";
 
 const AuthFinder = withAuthFinder(() => hash.use('scrypt'), {
   uids: ['email'],
@@ -30,6 +31,9 @@ export default class User extends compose(BaseModel, AuthFinder) {
 
   @column()
   declare status: string
+
+  @column()
+  declare options: UserOptions;
 
   @column.dateTime({ autoCreate: true })
   declare created_at: DateTime

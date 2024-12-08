@@ -6,7 +6,7 @@ export default class UserController {
   public async update(ctx: HttpContext) {
     const { params, request, response }: HttpContext = ctx
     const userId = params
-    const user_data = request.only(['email', 'password', 'firstName', 'lastName', 'nickName', 'status', 'options'])
+    const user_data = request.only(['email', 'password', 'firstName', 'lastName', 'nickName'])
 
     const user = await User.findBy('id', userId['userid'])
     if (!user) {

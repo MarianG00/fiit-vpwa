@@ -12,6 +12,7 @@ export const userStore = reactive({
     avatar: '../src/assets/default_avatar1.jpg',
     options: {
       notifications: '1',
+      status: 'Online'
     },
   },
 
@@ -27,11 +28,11 @@ export const userStore = reactive({
     this.current_user.id = user.id;
     this.current_user.email = user.email;
     this.current_user.isAuthenticated = true;
-    this.current_user.status = user.status;
     this.current_user.nick = user.username;
     this.current_user.name = user.firstName;
     this.current_user.lastName = user.lastName;
     this.current_user.token = token;
+    this.current_user.options = user.options;
     return true;
   },
 
