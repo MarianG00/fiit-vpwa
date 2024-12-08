@@ -258,24 +258,56 @@
 import { useRouter } from 'vue-router';
 import { useQuasar } from 'quasar';
 import { userStore } from 'stores/userStore';
+import { watch } from 'vue';
 import { channelsStore } from 'stores/channelsStore';
+import axios from 'axios';
 
 
 export default {
   setup() {
+
     const router = useRouter();
     const $q = useQuasar();
     if (!userStore.current_user.isAuthenticated) {
-      router.push('/login');
+      try {
+        const user = JSON.parse(localStorage.getItem('user'));
+        userStore.login(user, null);
+      } catch (e) {
+        console.error(e);
+        router.push('/login');
+      }
+    }
+    watch(
+      () => userStore.current_user.status,async (newStatus, oldStatus) => {
+        const response = await axios.post(`http://localhost:3333/api/v1/users/update/${userStore.current_user.id}`, {
+          status: newStatus,
+          prev_status: oldStatus,
+        })
+        if(response.status != 200) {
+          $q.notify({
+            type: 'error',
+            message: 'Status update failed',
+          })
+          userStore.current_user.status = oldStatus;
+        }
+      }
+    )
+    const logout = async () => {
+      const response = await axios.post('http://localhost:3333/api/v1/users/logout', {userToken: userStore.token});
+      console.log('Logged out: ', response);
+      if (response.status === 200) {
+        router.push('/login');
+      }else{
+        $q.notify({
+          type: 'error',
+          message: response.message,
+          timeout: 5000,
+        })
+      }
     }
     const onLogOut = () => {
-      $q.notify({
-        type: 'info',
-        message: 'Logged out',
-        timeout: 2500,
-      });
       console.log('logout');
-      router.push('/login');
+      logout();
     };
 
     return {
