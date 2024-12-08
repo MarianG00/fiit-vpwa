@@ -2,6 +2,7 @@ import { HttpContext } from '@adonisjs/core/http'
 import User from '#models/user'
 import hash from "@adonisjs/core/services/hash";
 import UserOptions from "#models/user_options";
+import ChatMembership from "#models/chat_membership";
 
 export default class AuthController {
   public async register({ request, response }: HttpContext) {
@@ -15,7 +16,7 @@ export default class AuthController {
       last_name: user_details.lastName,
       username: user_details.nickName,
     }
-    const general = {''}
+
     const user = await User.create(user_details)
     console.log(user)
     const options = await UserOptions.create({})
@@ -23,6 +24,9 @@ export default class AuthController {
     console.log(options)
     user.merge(data)
     user.save()
+    const general = {'chat': 1, role: '0', 'user': user.id}
+    const membr = await ChatMembership.create(general)
+    membr.save()
     return response.created(user)
   }
 
