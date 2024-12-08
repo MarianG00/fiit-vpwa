@@ -47,6 +47,7 @@
 </template>
 
 <script>
+import {connect} from 'src/ws';
 import { ref } from 'vue';
 import { useRouter } from 'vue-router';
 import { useQuasar } from 'quasar';
@@ -78,6 +79,7 @@ export default {
       notifAccess();
       if (userStore.login(response.data['user'], response.data['userToken'])) {
         localStorage.setItem('user', JSON.stringify(response.data['user']));
+        connect();
         $q.notify({
           type: 'positive',
           message: `Logged in as ${userStore.current_user.nick}`,

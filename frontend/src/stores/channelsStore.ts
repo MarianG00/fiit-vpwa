@@ -17,5 +17,11 @@ export const channelsStore = reactive({
     if (index !== -1) {
       this.channels.splice(index, 1);
     }
+  },
+  sendMessage(message: string, channelId: string) {
+    console.log('Sending message:', message, 'to channel:', channelId);
+  },
+  receiveMessage(message: string, channelId: string) {
+    console.log('Received message:', message, 'from channel:', channelId);
   }
 });

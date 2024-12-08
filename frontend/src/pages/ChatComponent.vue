@@ -42,6 +42,7 @@ import { channelsStore } from 'stores/channelsStore';
 import { userStore } from 'stores/userStore';
 import UserTyping from 'src/components/UserTyping.vue';
 import axios from 'axios';
+import { send } from  '../ws';
 
 export default {
   setup() {
@@ -66,13 +67,15 @@ export default {
   },
   methods: {
     sendMessage() {
+      send(this.newMessage);
+
       if (this.newMessage) {
+        // todo get from BE
         this.messages.push({
           id: Date.now(),
-          user: userStore.current_user, // todo set the user
+          user: userStore.current_user.id,
           text: [this.newMessage],
         });
-        // Example notification, set forceBoth to true to show both browser & toasty notification
         this.sendNotif(`New Message in ${this.currentChannel}`, {}, true);
         switch (true) {
           case this.newMessage === '/list':
@@ -157,7 +160,6 @@ export default {
       }
     },
     async onLoad (index, done) {
-      done();
       if (index > 5) {
         this.endOfChat = true;
         return done()
