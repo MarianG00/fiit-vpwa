@@ -39,11 +39,10 @@ export default class AuthController {
     }
 
     const userToken = await auth.use('api').authenticateAsClient(user)
-    console.log(userToken)
     if (!userToken) {
       return response.internalServerError({message: 'Failed to get token'})
     }
-    return response.ok({ userToken, user })
+    return response.ok({ userToken: auth.user, user })
   }
 
   //   logout function

@@ -115,7 +115,7 @@ export default {
           password: password.value,
           firstName: firstName.value,
           lastName: lastName.value,
-          username: nickName.value,
+          nickName: nickName.value,
         });
         console.log('Registered:', response.data);
         $q.notify({

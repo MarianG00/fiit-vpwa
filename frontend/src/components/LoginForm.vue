@@ -62,6 +62,7 @@ export default {
     const $q = useQuasar();
 
     const login = async () => {
+
       try {
         const response = await axios.post('http://localhost:3333/api/v1/users/login', {
           email: email.value,
@@ -74,7 +75,8 @@ export default {
           }
         };
       notifAccess();
-      if (userStore.login(response.data['user'])) {
+      if (userStore.login(response.data['user'], response.data['userToken'])) {
+        localStorage.setItem('user', JSON.stringify(response.data['user']));
         $q.notify({
           type: 'positive',
           message: `Logged in as ${userStore.current_user.nick}`,
