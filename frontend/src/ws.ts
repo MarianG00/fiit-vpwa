@@ -5,7 +5,7 @@ let onNewMessages: any;
 function connect() {
   const userString = localStorage.getItem('user')!;
   const user = JSON.parse(userString)
-  socket = new WebSocket(`ws://localhost:8080/socket?userId=${user.id}&username=${user.username}`);
+  socket = new WebSocket(`ws://localhost:10000/socket?userId=${user.id}&username=${user.username}`);
 
   socket.onopen = () => {
     console.log('WebSocket connection established');

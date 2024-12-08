@@ -3,7 +3,7 @@ import axios from 'axios';
 
 console.log('Starting WebSocket server...');
 
-const wss = new WebSocketServer({ port: 8080 });
+const wss = new WebSocketServer({ port: 10000 });
 
 type UserWS = { ws: WebSocket, userId: number };
 let users: UserWS[] = [];

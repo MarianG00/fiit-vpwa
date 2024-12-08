@@ -79,9 +79,12 @@ export default class ChatMembershipController {
     if(membs.length === 0) {
       return response.status(404).send({message: 'No chat memberships found'})
     }
+    console.log(membs)
     const users = membs.map((membership) => membership.user);
-    const user_objects = User.query().whereIn('id', users)
-    for (const user of users) {
+    console.log(users)
+    const user_objects = await User.query().whereIn('id', users)
+    console.log("OBJECTS: ",user_objects)
+    for (let user of user_objects) {
       user.toJSON()
     }
     return response.status(200).send(user_objects)
