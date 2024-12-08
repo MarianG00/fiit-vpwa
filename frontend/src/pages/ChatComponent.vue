@@ -100,15 +100,11 @@ export default {
       this.newMessage = '';
     },
     listMembers() {
-      // axios.get(`http://localhost:3333/api/v1/channels/${this.currentChannel}/members/`)
-      //   .then((resp) => {
-      //     this.members = resp.data.map((a) => a.username);
-      //   });
-      this.messages.push({
-        id: Date.now(),
-        user: 'Server',
-        text: [this.members.join(', ')],
-      });
+      axios.get(`http://localhost:3333/api/v1/chat_memberships/members/${this.currentChannel}`)
+        .then((resp) => {
+          this.newMessage = resp.data.map(a => a.username).join(', ');
+          this.sendMessage();
+        })
     },
     quitChannel() {
       channelsStore.quitChannel(this.currentChannel);
