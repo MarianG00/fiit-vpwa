@@ -5,7 +5,8 @@ CREATE TABLE "users" (
   "last_name" varchar,
   "email" varchar,
   "password" varchar,
-  "created_at" timestamp DEFAULT CURRENT_TIMESTAMP
+  "created_at" timestamp DEFAULT CURRENT_TIMESTAMP,
+  "options" integer
 );
 
 CREATE TABLE "user_options" (
@@ -77,6 +78,14 @@ CREATE TABLE "invitations" (
   "created_by" integer
 );
 
+-- Add defaults
+
+INSERT INTO "user_options" ("user", "notifications_me_only", "notifications", "status") VALUES (1, false, true, 'active');
+INSERT INTO "users" ("username", "first_name", "last_name", "email", "password", "options") VALUES ('admin', 'Admin', 'Admin', 'admin@admin.admin', '$scrypt$n=16384,r=8,p=1$B6CfEKDHEQ9rn2KHYDZbFA$c4QMoukMsFsSW8oIZMmF1bjciv3R+qJrYjqWhO4Yy2VPpOJ6aab///PHRH0FR7gxwWtKpernp7PCW2a9dogdLw', 1);
+INSERT INTO "chats" ("name", "private", "administrator", "last_update", "created_by") VALUES ('General', false, 1, CURRENT_TIMESTAMP, 1);
+INSERT INTO "chat_memberships" ("user", "chat", "role", "created_by") VALUES (1, 1, 1, 1);
+INSERT INTO "messages" ("body", "chat", "created_by") VALUES ('Welcome to the chat!', 1, 1);
+
 -- Add Foreign Keys after table creation
 
 ALTER TABLE "user_options" ADD FOREIGN KEY ("user") REFERENCES "users" ("id");
@@ -106,5 +115,4 @@ ALTER TABLE "invitations" ADD FOREIGN KEY ("created_by") REFERENCES "users" ("id
 ALTER TABLE "chat_member_kick" ADD FOREIGN KEY ("chat_membership") REFERENCES "chat_memberships" ("id");
 ALTER TABLE "chat_member_kick" ADD FOREIGN KEY ("user") REFERENCES "users" ("id");
 
-ALTER TABLE "users" ADD COLUMN "options" integer;
 ALTER TABLE "users" ADD FOREIGN KEY ("options") REFERENCES "user_options" ("id");
