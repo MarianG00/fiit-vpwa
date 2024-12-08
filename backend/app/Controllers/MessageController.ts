@@ -37,7 +37,7 @@ export default class MessageController {
     delete data.attachments
     const message = await Message.create(data)
     await message.save()
-    if(data.attachments.length > 0){
+    if(data.attachments && data.attachments.length > 0){
       let temp
       for (const item of attachments) {
         item['message'] = message.id
@@ -59,7 +59,7 @@ export default class MessageController {
     let temp
     for (const item of data.attachments) {
       item['message'] = message
-      temp await Attachments.create(item)
+      temp = await Attachments.create(item)
       temp.save()
     }
   }
