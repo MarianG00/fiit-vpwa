@@ -26,7 +26,7 @@ wss.on('connection', (ws, req) => {
 
     axios.post('http://localhost:3333/api/v1/messages/create', {
       body: parsedData.message,
-      createdBy: userId,
+      created_by: userId,
       chat: parsedData.channelId
     });
 
