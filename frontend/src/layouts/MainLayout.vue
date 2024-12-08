@@ -32,7 +32,7 @@
           <q-item-section>
             <q-btn icon="add" label="New Channel" flat @click="showDialog=true" />
           </q-item-section>
-        </q-item>>
+        </q-item>
         <q-item>
           <div class="text-h6">Channels</div>
         </q-item>

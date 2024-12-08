@@ -117,12 +117,13 @@ export default class MessageController {
   public async chatlist(ctx: HttpContext) {
     const {params, request, response}: HttpContext = ctx
     const chatid = params.chat_id
+    const index = params.index
     const chat = await Chat.findBy('id', chatid)
     if (!chat) {
       return response.status(404).send({message: 'Chat not found'})
     }
 
-    const messages = await Message.query().where('chat', chatid)
+    const messages = await Message.query().where('chat', chatid).limit(5).offset(index * 5)
     if (messages.length === 0) {
       return response.status(200).send([])
     }

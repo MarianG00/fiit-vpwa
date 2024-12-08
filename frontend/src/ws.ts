@@ -24,8 +24,6 @@ function connect() {
     console.log('Received message via websockets:', data);
     const message = data.message;
     const channelId = data.channelId;
-    console.log('Message:', message);
-    console.log('Channel ID:', channelId);
     if (window.location.href.includes(`/channel/${channelId}`)) {
       console.log('Appending message to chat');
       onNewMessages!({
@@ -45,9 +43,8 @@ function setOnNewMessages(callback: any) {
 
 
 function send(message: string) {
-  // const url = window.location.href;
-  // const channelId = url.split('/channel/')[1]; // todo
-  const channelId = 1;
+  const url = window.location.href;
+  const channelId = url.split('/channel/')[1];
   const data = { message, channelId };
   console.log('Sending message via websockets: ', data);
   socket.send(JSON.stringify(data));

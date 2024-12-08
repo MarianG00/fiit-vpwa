@@ -68,14 +68,12 @@ export default {
   mounted() {
     setOnNewMessages((message) => {
       this.messages.push(message);
-      console.log(this.messages);
-      console.log(userStore.current_user.id);
+      this.sendNotif(`New Message in ${this.currentChannel}`, {}, true);
     });
   },
   methods: {
     sendMessage() {
       send(this.newMessage);
-      this.sendNotif(`New Message in ${this.currentChannel}`, {}, true);
       switch (true) {
         case this.newMessage === '/list':
           this.listMembers();
@@ -102,6 +100,10 @@ export default {
       this.newMessage = '';
     },
     listMembers() {
+      // axios.get(`http://localhost:3333/api/v1/channels/${this.currentChannel}/members/`)
+      //   .then((resp) => {
+      //     this.members = resp.data.map((a) => a.username);
+      //   });
       this.messages.push({
         id: Date.now(),
         user: 'Server',
@@ -143,6 +145,7 @@ export default {
       this.quitChannel();
     },
     sendNotif(title, options, forceBoth) {
+      if (userStore.current_user.options.status === 'Offline' || userStore.current_user.options.status === 'Do Not Disturb' || this.$q.appVisible) return;
       if (Notification.permission === 'granted') {
         if (this.$q.appVisible || forceBoth) {
           this.$q.notify({
@@ -157,19 +160,18 @@ export default {
       }
     },
     async onLoad (index, done) {
-      if (index > 5) {
-        this.endOfChat = true;
-        return done()
-      }
       try {
-      const resp = await axios.get(`http://localhost:3333/api/v1/messages/chatlist/${this.currentChannel}/`)
-      this.messages = resp.data.map(a => ({
-        id: a.id,
-        text: [a.body],
-        createdByUsername: a.createdBy.username,
-        createdById: a.createdBy.id
-      }));
+        const resp = await axios.get(`http://localhost:3333/api/v1/messages/chatlist/${this.currentChannel}/${index++}`);
+        if (resp.data.length < 10)
+          this.endOfChat = true;
+        this.messages.push(...resp.data.map(a => ({
+          id: a.id,
+          text: [a.body],
+          createdByUsername: a.createdBy.username,
+          createdById: a.createdBy.id
+        })));
       }catch(err) {
+        this.endOfChat = true;
         console.log('no messages');
       }
       done()

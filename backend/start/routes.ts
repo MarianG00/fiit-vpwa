@@ -115,7 +115,7 @@ router.group(() => {
     const {default: MessageController} = await import('#controllers/MessageController')
     return new MessageController().list(ctx)
   })
-  router.get('chatlist/:chat_id', async (ctx) => {
+  router.get('chatlist/:chat_id/:index', async (ctx) => {
     const {default: MessageController} = await import('#controllers/MessageController')
     return new MessageController().chatlist(ctx)
   })
